@@ -3,12 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Website with External Content</title>
+    <title>Login to Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+
+        #login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        #login-container h1 {
+            margin-bottom: 20px;
+        }
+
+        #passcode {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #loginButton {
+            padding: 10px;
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #loginButton:hover {
+            background-color: #0056b3;
+        }
+
+        #loading {
+            display: none;
+            margin-top: 10px;
+            font-size: 16px;
+            color: #555;
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        #dashboard {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Content from Another Website</h1>
-    <div id="content">Loading...</div>
-    
-    <script src="script.js"></script>
+    <div id="login-container">
+        <h1>Enter Passcode to Access Dashboard</h1>
+        <input type="password" id="passcode" placeholder="Enter passcode">
+        <button id="loginButton">Login</button>
+        <div id="loading">Loading...</div>
+        <div id="error-message"></div>
+    </div>
+
+    <div id="dashboard" style="display:none;">
+        <h1>Welcome to the Dashboard</h1>
+        <p>This is a secure area only accessible with the correct passcode.</p>
+        <!-- Add more dashboard content here -->
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginButton = document.getElementById("loginButton");
+            const passcodeInput = document.getElementById("passcode");
+            const loginContainer = document.getElementById("login-container");
+            const dashboard = document.getElementById("dashboard");
+            const loadingDiv = document.getElementById("loading");
+            const errorMessage = document.getElementById("error-message");
+
+            loginButton.addEventListener("click", () => {
+                const passcode = passcodeInput.value;
+                if (passcode) {
+                    loadingDiv.style.display = "block";
+                    errorMessage.textContent = "";
+
+                    const url = "https://cdn.novacore.app/pass/encry/testing.txt";
+
+                    fetch(url)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.text();
+                        })
+                        .then(text => {
+                            loadingDiv.style.display = "none";
+                            if (text.includes(passcode)) {
+                                loginContainer.style.display = "none";
+                                dashboard.style.display = "block";
+                            } else {
+                                errorMessage.textContent = "Invalid passcode.";
+                            }
+                        })
+                        .catch(error => {
+                            loadingDiv.style.display = "none";
+                            errorMessage.textContent = `Failed to load content: ${error.message}`;
+                        });
+                } else {
+                    errorMessage.textContent = "Please enter a passcode.";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
